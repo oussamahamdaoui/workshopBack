@@ -38,9 +38,54 @@ returns:
 
 ````javascript
 {
-  name: { type: String, required: true },
-  username: { type: String, required: true, index: { unique: true } },
-  password: { type: String, required: true },
-  isHR: { type: Boolean, default: false },
+  success: Boolean,
+  data:{
+    name: { type: String, required: true },
+    username: { type: String, required: true, index: { unique: true } },
+    password: { type: String, required: true },
+    isHR: { type: Boolean, default: false },
+  }
+  token: String,
 }
 ````
+
+### Add a question `POST` to `/add-question`:
+
+````javascript
+{
+  label: String,
+  responses: [
+    {
+      label: String,
+      points: Number,
+    },
+  ],
+  tags: [],
+  token: String,
+}
+````
+
+returns:
+
+````javascript
+{
+  success:Boolean,
+}
+````
+
+### Get My questions `POST` to `/get-questions`:
+
+````javascript
+{
+  token: String,
+}
+````
+
+returns:
+
+````javascript
+{
+  success:Boolean,
+}
+````
+

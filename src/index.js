@@ -6,9 +6,14 @@ const connectDb = require('./Db');
 const {
   withHashedPassword,
   comparePassword,
+  verifyJWTMiddlewear,
+  createJWToken,
+  safe,
 } = require('./utils');
 
+// Models
 const User = require('./models/User.model');
+const Question = require('./models/Question.model');
 
 
 app.use(bodyParser.json());
@@ -26,15 +31,39 @@ app.post('/connection', async (req, res) => {
   const credentials = req.body;
   const user = await User.findByUserName(credentials.username);
   if (user && await comparePassword(credentials.password, user.password)) {
-    delete user.password;
     return res.json({
       success: true,
-      user,
+      data: safe(user),
+      token: createJWToken({
+        sessionData: user,
+      }),
     });
   }
   return res.json({
     success: false,
   });
+});
+
+app.post('/add-question', verifyJWTMiddlewear, async (req, res) => {
+  const { isHR } = req.user;
+  if (isHR === false) {
+    return res.json({
+      success: false,
+      message: 'You are not HR',
+    });
+  }
+
+  await (new Question({
+    ...req.body,
+    userId: req.user._id,
+  })).save();
+  return res.json({
+    success: true,
+  });
+});
+
+app.post('/get-questions', verifyJWTMiddlewear, async (req, res) => {
+  res.json(await Question.getAll(req.user._id));
 });
 
 
