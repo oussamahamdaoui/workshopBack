@@ -5,6 +5,8 @@ run `npm watch` for dev
 
 run `npm start` for prod
 
+You need to have mongodb installed
+
 ### Create a user `POST` to `/create-account`:
 
 ````javascript
