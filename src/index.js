@@ -14,9 +14,17 @@ const {
 // Models
 const User = require('./models/User.model');
 const Question = require('./models/Question.model');
+const Game = require('./Game');
 
+const Games = new Map();
 
 app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'all'); // update to match the domain you will make the request from
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 
 app.post('/create-account', async (req, res) => {
@@ -66,6 +74,14 @@ app.post('/get-questions', verifyJWTMiddlewear, async (req, res) => {
   res.json(await Question.getAll(req.user._id));
 });
 
+app.post('/create-game', verifyJWTMiddlewear, async (req, res) => {
+  const game = new Game();
+  Games.push(game);
+  res.json({
+    gameId: game.id,
+  });
+});
+
 
 connectDb().then(async () => {
   http.listen(3000, () => {
@@ -75,6 +91,12 @@ connectDb().then(async () => {
   console.error(`db connection error: ${JSON.stringify(e)}`);
 });
 
-io.on('connection', (/* socket */) => {
-  console.log('a user connected');
+io.on('connection', (socket) => {
+  socket.on('join', ({ id, user }) => {
+    Games.get(id).join(socket, user);
+  });
+
+  socket.on('disconnect', () => {
+    Games.get(id).join(socket, user);
+  });
 });
