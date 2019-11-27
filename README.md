@@ -91,3 +91,126 @@ returns:
 }
 ````
 
+### Create game `POST` to `/create-game`:
+
+````javascript
+{
+  token: String,
+}
+````
+
+returns:
+
+````javascript
+{
+  success:Boolean,
+  gameId:String,
+}
+````
+
+## Communication with socket.io
+
+To communicate in a game you need to use `socket.emit(event, paramObject)` for example `socket.emit('join', { gameId })`
+You should always provide the `gameId`
+
+
+### Connect to game socket.emit('join', params)`, with params:
+
+````javascript
+{
+  gameId: String,
+  user:{
+    username:String,
+  }
+}
+````
+
+### To listen for a when a new user joined  `socket.on('user-joined', (params)=>{}})`, with params:
+
+````javascript
+{
+  users: [
+    {
+      username:String,
+    }
+  ],
+}
+````
+
+
+### To start a game  `socket.emit('start-game', params)`, with params:
+
+````javascript
+{
+  gameId: String,
+}
+````
+
+### Listen for the question  `socket.on('question', (params)=>{}})`, with params:
+
+````javascript
+{
+  label: String,
+  responses:[
+    {
+      label: String,
+    }
+  ],
+}
+````
+
+### Vote for a user  `socket.emit('vote', params)`, with params:
+
+````javascript
+{
+  gameId: String,
+  username: String,
+}
+````
+
+
+### Replay to the question `socket.emit('replay', params)`, with params:
+
+````javascript
+{
+  gameId: String,
+  response: Number, // the index of the chosen response
+}
+````
+
+
+### Listen for the chosen user from the poll `socket.on('chosen', (params)=>{}})`, with params:
+
+````javascript
+{
+  username: String;
+}
+````
+
+### Listen for the new score `socket.on('new-score', (params)=>{}})`, with params:
+
+````javascript
+{
+  score: Number;
+}
+````
+
+### Listen for the game over `socket.on('game-over', (params)=>{}})`, with params:
+
+````javascript
+{
+  score: Number;
+}
+````
+
+### Listen for a user disconnected `socket.on('game-over', (params)=>{}})`, with params:
+
+````javascript
+{
+  username: String;
+}
+````
+
+
+
+

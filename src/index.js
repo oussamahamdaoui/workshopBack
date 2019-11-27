@@ -21,7 +21,7 @@ const Games = new Map();
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'all'); // update to match the domain you will make the request from
+  res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
@@ -75,9 +75,12 @@ app.post('/get-questions', verifyJWTMiddlewear, async (req, res) => {
 });
 
 app.post('/create-game', verifyJWTMiddlewear, async (req, res) => {
+  const questions = await Promise.all(new Array(10).fill().map(async () => Question.getRandom()));
   const game = new Game();
-  Games.push(game);
+  game.setQuestions(questions);
+  Games.set(game.id, game);
   res.json({
+    success: true,
     gameId: game.id,
   });
 });
@@ -96,7 +99,23 @@ io.on('connection', (socket) => {
     Games.get(id).join(socket, user);
   });
 
+  socket.on('vote', ({ id, username }) => {
+    Games.get(id).vote(socket, username);
+  });
+
+  socket.on('replay', ({ id, responseIndex }) => {
+    Games.get(id).replay(socket, responseIndex);
+  });
+
+
+  socket.on('start-game', ({ id }) => {
+    if (Games.get(id).has(socket)) {
+      Games.get(id).start();
+    }
+  });
+
   socket.on('disconnect', () => {
-    Games.get(id).join(socket, user);
+    const game = Array.from(Games.values).find((g) => g.has(socket));
+    game.leave(socket);
   });
 });

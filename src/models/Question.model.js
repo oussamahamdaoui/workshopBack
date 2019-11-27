@@ -18,6 +18,12 @@ QuestionSchema.statics.getAll = async function getAll(userId) {
   });
 };
 
+QuestionSchema.statics.getRandom = async function getRandom() {
+  const count = await this.count();
+  const rand = Math.floor(Math.random() * count);
+  return this.findOne().skip(rand);
+};
+
 
 const Question = model('Question', QuestionSchema);
 
