@@ -85,11 +85,13 @@ class Game {
       return prev;
     }, {});
 
-
-    this.broadCast('chosen', { username: winner });
-    const finalResponse = this.getByUsername(winner).currentResponse;
-    const earnedPoints = this.questions[this.currentQuestionIndex].responses[finalResponse].points;
-    this.score += earnedPoints;
+    if (winner) {
+      this.broadCast('chosen', { username: winner });
+      const finalResponse = this.getByUsername(winner).currentResponse;
+      const earnedPoints = this.questions[this.currentQuestionIndex]
+        .responses[finalResponse].points;
+      this.score += earnedPoints;
+    }
     this.broadCast('new-score', {
       score: this.score,
     });
@@ -103,7 +105,7 @@ class Game {
       setTimeout(() => {
         this.calculateRound();
         this.start();
-      }, 1000);
+      }, 10000);
     } else {
       this.broadCast('game-over', this.score);
     }

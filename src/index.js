@@ -96,19 +96,23 @@ connectDb().then(async () => {
 
 io.on('connection', (socket) => {
   socket.on('join', ({ id, user }) => {
+    if (!Games.has(id)) return;
     Games.get(id).join(socket, user);
   });
 
   socket.on('vote', ({ id, username }) => {
+    if (!Games.has(id)) return;
     Games.get(id).vote(socket, username);
   });
 
   socket.on('replay', ({ id, responseIndex }) => {
+    if (!Games.has(id)) return;
     Games.get(id).replay(socket, responseIndex);
   });
 
 
   socket.on('start-game', ({ id }) => {
+    if (!Games.has(id)) return;
     if (Games.get(id).has(socket)) {
       Games.get(id).start();
     }
