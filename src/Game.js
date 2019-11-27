@@ -16,7 +16,7 @@ class Game {
   }
 
   getByUsername(username) {
-    return Array.from(this.sockets.values).find((e) => e.username === username);
+    return Array.from(this.sockets.values()).find((e) => e.username === username);
   }
 
   has(socket) {
@@ -24,17 +24,17 @@ class Game {
   }
 
   join(socket, user) {
-    if (this.started || Array.from(this.sockets.values).length >= MAX_USERS_PER_GAME) {
+    if (Array.from(this.sockets.values()).length >= MAX_USERS_PER_GAME) {
       return;
     }
     this.sockets.set(socket, user);
     this.broadCast('user-joined', {
-      users: Array.from(this.sockets.values),
+      users: Array.from(this.sockets.values()),
     });
   }
 
   broadCast(type, message) {
-    this.sockets.keys.forEach((socket) => {
+    Array.from(this.sockets.keys()).forEach((socket) => {
       socket.emit(type, message);
     });
   }
@@ -77,13 +77,14 @@ class Game {
     let max = 0;
     let winner = null;
 
-    Array.from(this.voted.values).reduce((prev, current) => {
+    Array.from(this.voted.values()).reduce((prev, current) => {
       // eslint-disable-next-line no-param-reassign
       prev[current] = prev[current] ? prev[current] + 1 : 1;
-      max = max < prev[current] ? prev[current] : max;
       winner = max < prev[current] ? current : winner;
+      max = max < prev[current] ? prev[current] : max;
       return prev;
     }, {});
+
 
     this.broadCast('chosen', { username: winner });
     const finalResponse = this.getByUsername(winner).currentResponse;
@@ -97,12 +98,12 @@ class Game {
 
 
   start() {
-    if (this.currentQuestionIndex < this.questions.length) {
+    if (this.currentQuestionIndex < this.questions.length - 1) {
       this.broadCast('question', this.nextQuestion());
       setTimeout(() => {
         this.calculateRound();
         this.start();
-      }, 9000);
+      }, 1000);
     } else {
       this.broadCast('game-over', this.score);
     }

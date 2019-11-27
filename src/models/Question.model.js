@@ -19,7 +19,7 @@ QuestionSchema.statics.getAll = async function getAll(userId) {
 };
 
 QuestionSchema.statics.getRandom = async function getRandom() {
-  const count = await this.count();
+  const count = await this.countDocuments();
   const rand = Math.floor(Math.random() * count);
   return this.findOne().skip(rand);
 };

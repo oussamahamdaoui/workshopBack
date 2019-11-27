@@ -116,6 +116,8 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     const game = Array.from(Games.values).find((g) => g.has(socket));
-    game.leave(socket);
+    if (game) {
+      game.leave(socket);
+    }
   });
 });
