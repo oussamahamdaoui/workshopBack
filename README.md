@@ -203,7 +203,7 @@ You should always provide the `gameId`
 }
 ````
 
-### Listen for a user disconnected `socket.on('game-over', (params)=>{}})`, with params:
+### Listen for a user disconnected `socket.on('user-left', (params)=>{}})`, with params:
 
 ````javascript
 {
